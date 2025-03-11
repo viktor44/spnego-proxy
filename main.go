@@ -94,7 +94,17 @@ func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bo
 	token, err := spnegoCli.GetToken()
 	if err != nil {
 		logger.Printf("failed to get SPNEGO token: %v", err)
-		return
+		// Recreate SPNEGOClient with password
+		password, err := getPassword(passwordFile)
+		if err != nil {
+			logger.Panic("failed to get password: %v", err)
+		}
+		cli := client.NewWithPassword(*user, *realm, password, cfg, opts...)
+		spnegoCli.Client = spnego.SPNEGOClient(cli, *spn)
+		token, err = spnegoCli.GetToken()
+		if err != nil {
+			logger.Panic("failed to get SPNEGO token after recreating SPNEGOClient: %v", err)
+		}
 	}
 	authHeader := "Negotiate " + token
 	req, err := http.ReadRequest(reqReader)
