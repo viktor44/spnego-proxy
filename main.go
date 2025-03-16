@@ -102,7 +102,7 @@ func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bo
 		if !errors.Is(err, io.EOF) {
 			logger.Printf("failed to read request: %v", err)
 		}
-		return
+		return -2  // Add return value for HTTP request error
 	}
 	req.Header.Set("Proxy-Authorization", authHeader)
 	if debug {
