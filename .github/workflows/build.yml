@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    # branches: [ master ]
-    tags:
-      - 'v*'
+    branches: [ master ]
+    # tags:
+    #   - 'v*'
 
 jobs:
   windows-build:
@@ -18,12 +18,13 @@ jobs:
     - name: Build
       run: go build -v -o spnego-proxy.exe .
     - name: Create ZIP archive
-      run: 7z a spnego-proxy-Windows.zip spnego-proxy.exe
+      run: 7z a spnego-proxy-win.zip spnego-proxy.exe
     - name: Release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: spnego-proxy-Windows.zip
+        draft: true
+        files: spnego-proxy-win.zip
 
   macos-build:
     runs-on: macos-latest
@@ -36,9 +37,10 @@ jobs:
     - name: Build
       run: go build -v -o spnego-proxy .
     - name: Create ZIP archive
-      run: zip spnego-proxy-macOS.zip spnego-proxy
+      run: zip spnego-proxy-mac.zip spnego-proxy
     - name: Release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: spnego-proxy-macOS.zip
+        draft: true
+        files: spnego-proxy-mac.zip
