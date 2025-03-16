@@ -75,7 +75,7 @@ func (c *SPNEGOClient) GetToken() (string, error) {
 	return base64.StdEncoding.EncodeToString(b), nil
 }
 
-func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bool) {
+func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bool) int {
 	defer conn.Close()
 	if debug {
 		defer logger.Printf("stop processing request for client: %v", conn.RemoteAddr())
@@ -84,7 +84,7 @@ func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bo
 	proxyConn, err := net.Dial("tcp", proxy)
 	if err != nil {
 		logger.Printf("failed to connect to proxy: %v", err)
-		return
+		return -2
 	}
 	defer proxyConn.Close()
 	reqReader := bufio.NewReader(conn)
@@ -94,7 +94,7 @@ func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bo
 	token, err := spnegoCli.GetToken()
 	if err != nil {
 		logger.Printf("failed to get SPNEGO token: %v", err)
-		return
+		return -1
 	}
 	authHeader := "Negotiate " + token
 	req, err := http.ReadRequest(reqReader)
@@ -125,6 +125,7 @@ func handleClient(conn net.Conn, proxy string, spnegoCli *SPNEGOClient, debug bo
 	go forward(conn, proxyConn)
 	go forward(proxyConn, conn)
 	wg.Wait()
+	return 0
 }
 
 func main() {
