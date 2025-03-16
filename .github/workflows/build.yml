@@ -2,17 +2,15 @@ name: Build
 
 on:
   push:
-    branches:
-	    - master
+    branches: [ master ]
   pull_request:
-    branches:
-	    - master 
+    branches: [ master ]
 
 jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [ windows-latest, macos-latest ]
 
     runs-on: ${{ matrix.os }}
 
