@@ -30,8 +30,14 @@ jobs:
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
+      if: runner.os == 'Windows'
       with:
         name: spnego-proxy-${{ runner.os }}
-        path: |
-          spnego-proxy
-          spnego-proxy.exe
+        path: spnego-proxy.exe
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      if: runner.os == 'macOS'
+      with:
+        name: spnego-proxy-${{ runner.os }}
+        path: spnego-proxy
