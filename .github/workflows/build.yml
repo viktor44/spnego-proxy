@@ -11,6 +11,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Set version
+      shell: bash
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -18,17 +21,19 @@ jobs:
     - name: Build
       run: go build -v -o spnego-proxy.exe .
     - name: Create ZIP archive
-      run: 7z a spnego-proxy-win.zip spnego-proxy.exe
+      run: 7z a spnego-proxy-win-${{ env.VERSION }}.zip spnego-proxy.exe
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
         draft: true
-        files: spnego-proxy-win.zip
+        files: spnego-proxy-win-${{ env.VERSION }}.zip
 
   macos-amd64-build:
       runs-on: macos-latest
       steps:
       - uses: actions/checkout@v3
+      - name: Set version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -36,17 +41,19 @@ jobs:
       - name: Build
         run: GOOS=darwin GOARCH=amd64 go build -v -o spnego-proxy .
       - name: Create ZIP archive
-        run: zip spnego-proxy-mac-amd64.zip spnego-proxy
+        run: zip spnego-proxy-mac-amd64-${{ env.VERSION }}.zip spnego-proxy
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: spnego-proxy-mac-amd64.zip
+          files: spnego-proxy-mac-amd64-${{ env.VERSION }}.zip
   
   macos-arm64-build:
       runs-on: macos-latest
       steps:
       - uses: actions/checkout@v3
+      - name: Set version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -54,9 +61,9 @@ jobs:
       - name: Build
         run: GOOS=darwin GOARCH=arm64 go build -v -o spnego-proxy .
       - name: Create ZIP archive
-        run: zip spnego-proxy-mac-arm64.zip spnego-proxy
+        run: zip spnego-proxy-mac-arm64-${{ env.VERSION }}.zip spnego-proxy
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: spnego-proxy-mac-arm64.zip
+          files: spnego-proxy-mac-arm64-${{ env.VERSION }}.zip
