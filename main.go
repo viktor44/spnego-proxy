@@ -182,7 +182,10 @@ func main() {
 		result := handleClient(conn, *proxy, spnegoCli, *debug)
 		if result == -1 {
 			// Handle SPNEGO token refresh
-			spnegoCli.Client = spnego.SPNEGOClient(cli, *spn)
+			cli := client.NewWithPassword(*user, *realm, passwd, cfg, opts...)
+			spnegoCli := &SPNEGOClient{
+				Client: spnego.SPNEGOClient(cli, *spn),
+			}
 		}
 	}
 }
